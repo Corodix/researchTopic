@@ -154,10 +154,39 @@ class engine():
         
 class route():
     
-    def __init__(self, locations, current):
-        self.locations = locations      
+    def __init__(self, locations, current):        
         self.currentLocation = current
+        self.locations = self.getShortestRoute(locations)   
+        print("shortest",self.locations)   
         self.coveredDistance = 0
+        
+    def getShortestRoute(self, locations):
+        routes = ArrayList()
+        if(locations.size()==0):
+            return routes
+        for location in locations:
+            route = ArrayList()
+            route.add(location)
+            remLocations = ArrayList(locations)
+            remLocations.remove(location)
+            routePart = self.getShortestRoute(remLocations)
+            for part in routePart:
+                route.add(part)          
+            routes.add(route)
+        
+        if(routes.size()==0):
+            return routes   
+        elif(route.size()==1):
+            return routes.get(0)      
+        shortest = routes.get(0)
+        shortestDistance = self.getTotalRouteDistance(routes.get(0))
+        for route in routes:
+            distance = self.getTotalRouteDistance(route)
+            if(distance<shortestDistance):
+                shortest = route
+                shortestDistance = distance    
+        return  shortest
+            
     
     def getRoute(self):        
         'sort locations to create the shortest route?' 
@@ -173,6 +202,14 @@ class route():
         distance = 0
         oldLocation = self.currentLocation
         for location in self.locations:
+            distance += self.getDistance(oldLocation, location)
+            oldLocation = location
+        return distance
+    
+    def getTotalRouteDistance(self, locations):
+        distance = 0
+        oldLocation = self.currentLocation
+        for location in locations:
             distance += self.getDistance(oldLocation, location)
             oldLocation = location
         return distance
@@ -222,7 +259,7 @@ class vehicle(abstractVehicle):
    
     def drive(self):
         self.engine.setGear(6)        
-        self.engine.setSpeed(100)
+        self.engine.setSpeed(60)
         driving = True
         while((self.route.getRoute().size()>0) & driving):   
             print("driving ", self.engine.status)
@@ -257,12 +294,6 @@ def main():
     locations.add(loc8)
     loc9 = location().__slots__=(-10,25)
     locations.add(loc9)
-    loc11 = location().__slots__=(3,33)
-    locations.add(loc11)
-    loc12 = location().__slots__=(3,40)
-    locations.add(loc12)
-    loc13 = location().__slots__=(0,40)
-    locations.add(loc13)
     
     b = battery()
     e = engine(b)

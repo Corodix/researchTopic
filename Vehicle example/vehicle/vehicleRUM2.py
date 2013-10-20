@@ -202,7 +202,6 @@ class routeRUM(RUM):
         self.engineRUM.optimizeSpeed()
     
     def optimizeEfficiency(self):
-        'optimize route for distance if possible, else'
         'sacrifice speed for fuel efficiency'
         self.engineRUM.optimizeEfficiency()
 
